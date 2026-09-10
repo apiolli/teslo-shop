@@ -77,4 +77,3 @@ export const CustomHeader = () => {
     </header>
   );
 };
-export default Header;
