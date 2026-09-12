@@ -2,12 +2,14 @@ import { Search, ShoppingBag, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRef, useState } from "react";
-import { useSearchParams } from "react-router";
+import { Link, useParams, useSearchParams } from "react-router";
+import { cn } from "@/lib/utils";
 
 export const CustomHeader = () => {
   const [cartCount] = useState(3);
 
   const [searchParams, setSearchParams] = useSearchParams();
+  const { gender } = useParams();
 
   const inputRef = useRef<HTMLInputElement>(null);
   const query = searchParams.get("query") || "";
@@ -16,11 +18,14 @@ export const CustomHeader = () => {
     if (event.key !== "Enter") return;
 
     const query = inputRef.current?.value;
-
-    if (!query) return;
-
     const newSearchParams = new URLSearchParams();
-    newSearchParams.set("query", query);
+
+    if (!query) {
+      newSearchParams.delete("query");
+    } else {
+      newSearchParams.set("query", query);
+    }
+
     setSearchParams(newSearchParams);
   };
 
@@ -40,30 +45,42 @@ export const CustomHeader = () => {
 
           {/* Navigation - Desktop */}
           <nav className="hidden md:flex items-center space-x-8">
-            <a
-              href="#"
-              className="text-sm font-medium transition-colors hover:text-primary"
+            <Link
+              to="/"
+              className={cn(
+                "text-sm font-medium transition-colors hover:text-primary",
+                !gender ? "underline underline-offset-5" : "",
+              )}
             >
-              Camisetas
-            </a>
-            <a
-              href="#"
-              className="text-sm font-medium transition-colors hover:text-primary"
+              Todos
+            </Link>
+            <Link
+              to="/gender/men"
+              className={cn(
+                "text-sm font-medium transition-colors hover:text-primary",
+                gender === "men" ? "underline underline-offset-5" : "",
+              )}
             >
-              Sudaderas
-            </a>
-            <a
-              href="#"
-              className="text-sm font-medium transition-colors hover:text-primary"
+              Hombres
+            </Link>
+            <Link
+              to="/gender/women"
+              className={cn(
+                "text-sm font-medium transition-colors hover:text-primary",
+                gender === "women" ? "underline underline-offset-5" : "",
+              )}
             >
-              Chaquetas
-            </a>
-            <a
-              href="#"
-              className="text-sm font-medium transition-colors hover:text-primary"
+              Mujeres
+            </Link>
+            <Link
+              to="gender/kid"
+              className={cn(
+                "text-sm font-medium transition-colors hover:text-primary",
+                gender === "kid" ? "underline underline-offset-5" : "",
+              )}
             >
-              Accesorios
-            </a>
+              Niños
+            </Link>
           </nav>
 
           {/* Search and Cart */}
@@ -75,7 +92,8 @@ export const CustomHeader = () => {
                   placeholder="Buscar productos..."
                   className="pl-9 w-64 h-9 bg-white"
                   ref={inputRef}
-                  // onKeyDown={event => }
+                  onKeyDown={(event) => handleSearch(event)}
+                  defaultValue={query}
                 />
               </div>
             </div>
