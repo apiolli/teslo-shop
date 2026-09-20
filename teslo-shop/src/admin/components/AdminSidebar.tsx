@@ -1,21 +1,12 @@
 import { useState } from "react";
-import {
-  Home,
-  Users,
-  BarChart3,
-  Settings,
-  FileText,
-  ShoppingCart,
-  Bell,
-  HelpCircle,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { Home, BarChart3, ChevronLeft, ChevronRight } from "lucide-react";
 import { CustomLogo } from "@/components/custom/CustomLogo";
 import { Link, useLocation } from "react-router";
+import { useAuthStore } from "@/auth/store/auth.store";
 
 export const AdminSidebar = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const { user } = useAuthStore();
 
   const onToggle = () => {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -26,12 +17,6 @@ export const AdminSidebar = () => {
   const menuItems = [
     { icon: Home, label: "Dashboard", to: "/admin" },
     { icon: BarChart3, label: "Productos", to: "/admin/products" },
-    // { icon: Users, label: "Users" },
-    // { icon: ShoppingCart, label: "Orders" },
-    // { icon: FileText, label: "Reports" },
-    // { icon: Bell, label: "Notifications" },
-    // { icon: Settings, label: "Settings" },
-    // { icon: HelpCircle, label: "Help" },
   ];
 
   const isActiveRoute = (to: string) => {
@@ -93,15 +78,13 @@ export const AdminSidebar = () => {
         <div className="p-4 border-t border-gray-200">
           <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
             <div className="w-10 h-10 bg-linear-to-br from-green-500 to-red-600 rounded-full flex items-center justify-center text-white font-semibold">
-              CD
+              {user?.fullName.substring(0, 2)}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-900 truncate">
-                Cesar Diaz
+                {user?.fullName}
               </p>
-              <p className="text-xs text-gray-500 truncate">
-                cesar@company.com
-              </p>
+              <p className="text-xs text-gray-500 truncate">{user?.email}</p>
             </div>
           </div>
         </div>

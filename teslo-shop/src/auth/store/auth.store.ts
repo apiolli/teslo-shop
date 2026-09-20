@@ -2,20 +2,25 @@ import type { User } from "@/types/user.interface";
 import { create } from "zustand";
 import { logionAction } from "../actions/login.action";
 
+type AuthStatus = "authenticated" | "not-authenticated" | "checking";
+
 type AuthState = {
   // Properties
   user: User | null;
   token: string | null;
+  authStatus: AuthStatus;
 
   // Getters
 
   // Actions
   login: (email: string, password: string) => Promise<boolean>;
+  logout: () => void;
 };
 
 export const useAuthStore = create<AuthState>()((set) => ({
   user: null,
   token: null,
+  authStatus: "checking",
   login: async (email: string, password: string) => {
     try {
       const data = await logionAction(email, password);
@@ -27,5 +32,9 @@ export const useAuthStore = create<AuthState>()((set) => ({
       localStorage.removeItem("token");
       return false;
     }
+  },
+  logout: () => {
+    set({ user: null, token: null });
+    localStorage.removeItem("token");
   },
 }));
