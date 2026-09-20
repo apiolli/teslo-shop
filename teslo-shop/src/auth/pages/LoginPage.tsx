@@ -6,13 +6,13 @@ import { CustomLogo } from "@/components/custom/CustomLogo";
 import placeholder from "../../assets/placeholder.svg";
 import { Link, useNavigate } from "react-router";
 import { useState, type FormEvent } from "react";
-import { logionAction } from "../actions/login.action";
-import { sileo } from "sileo";
-import axios from "axios";
+import { toast } from "sonner";
+import { useAuthStore } from "../store/auth.store";
 
 export const LoginPage = () => {
   const navigate = useNavigate();
   const [isPosting, setIsPosting] = useState(false);
+  const { login } = useAuthStore();
 
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -23,19 +23,15 @@ export const LoginPage = () => {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    try {
-      const data = await logionAction(email, password);
-      localStorage.setItem("token", data.token);
-      console.log("re-direccionando a al home");
+    const isValid = await login(email, password);
+
+    if (isValid) {
+      toast.success("Bienvenido");
       navigate("/");
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        sileo.error({
-          title: "Login Error",
-          description: error.response?.data.message,
-        });
-      }
+      return;
     }
+
+    toast.error("Error");
 
     setIsPosting(false);
   };
