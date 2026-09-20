@@ -1,5 +1,4 @@
-import { useQueries, useQuery } from "@tanstack/react-query";
-import React from "react";
+import { useQuery } from "@tanstack/react-query";
 import { getProductAction } from "../actions/get-products.action";
 
 export const useProducts = () => {
