@@ -7,7 +7,7 @@ export const checkAuthAction = async (): Promise<AuthResponse> => {
   if (!token) throw new Error("No token found");
 
   try {
-    const { data } = await tesloApi.get<AuthResponse>("/auth/register");
+    const { data } = await tesloApi.get<AuthResponse>("/auth/check-status");
     localStorage.setItem("token", data.token);
     return data;
   } catch (error) {
