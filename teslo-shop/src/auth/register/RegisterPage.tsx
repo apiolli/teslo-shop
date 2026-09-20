@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CustomLogo } from "@/components/custom/CustomLogo";
 import { Link } from "react-router";
+import placeholder from "../../assets/placeholder.svg";
 
 export const RegisterPage = () => {
   return (
@@ -92,7 +93,7 @@ export const RegisterPage = () => {
           </form>
           <div className="relative hidden bg-muted md:block">
             <img
-              src="/placeholder.svg"
+              src={placeholder}
               alt="Image"
               className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
             />
