@@ -12,6 +12,7 @@ type AuthState = {
   authStatus: AuthStatus;
 
   // Getters
+  isAdmin: () => boolean;
 
   // Actions
   login: (email: string, password: string) => Promise<boolean>;
@@ -19,7 +20,7 @@ type AuthState = {
   cheackAuthStatus: () => Promise<boolean>;
 };
 
-export const useAuthStore = create<AuthState>()((set) => ({
+export const useAuthStore = create<AuthState>()((set, get) => ({
   user: null,
   token: null,
   authStatus: "checking",
@@ -64,5 +65,9 @@ export const useAuthStore = create<AuthState>()((set) => ({
 
       return false;
     }
+  },
+  isAdmin: () => {
+    const roles = get().user?.roles || [];
+    return roles.includes("admin");
   },
 }));
