@@ -42,7 +42,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     }
   },
   logout: () => {
-    set({ user: null, token: null });
+    set({ user: null, token: null, authStatus: "not-authenticated" });
     localStorage.removeItem("token");
   },
   cheackAuthStatus: async () => {
