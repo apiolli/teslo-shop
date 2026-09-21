@@ -3,15 +3,44 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CustomLogo } from "@/components/custom/CustomLogo";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import placeholder from "../../assets/placeholder.svg";
+import { useAuthStore } from "../store/auth.store";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export const RegisterPage = () => {
+  const { register } = useAuthStore();
+  const [isPosting, setIsPosting] = useState(false);
+  const navigate = useNavigate();
+
+  const handleRegister = async (event: React.SubmitEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsPosting(true);
+
+    const formData = new FormData(event.target as HTMLFormElement);
+    const email = formData.get("email") as string;
+    const fullName = formData.get("fullName") as string;
+    const password = formData.get("password") as string;
+
+    const isValid = await register(email, password, fullName);
+
+    if (isValid) {
+      toast.success("Bienvenido");
+      navigate("/");
+      return;
+    }
+
+    toast.error("Error");
+
+    setIsPosting(false);
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8">
+          <form className="p-6 md:p-8" onSubmit={(e) => handleRegister(e)}>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center">
                 <CustomLogo />
@@ -24,6 +53,7 @@ export const RegisterPage = () => {
                 <Input
                   id="name"
                   type="text"
+                  name="fullName"
                   placeholder="Nombre completo"
                   required
                 />
@@ -33,6 +63,7 @@ export const RegisterPage = () => {
                 <Input
                   id="email"
                   type="email"
+                  name="email"
                   placeholder="mail@google.com"
                   required
                 />
@@ -41,9 +72,9 @@ export const RegisterPage = () => {
                 <div className="flex items-center">
                   <Label htmlFor="password">Contraseña</Label>
                 </div>
-                <Input id="password" type="password" required />
+                <Input id="password" type="password" required name="password" />
               </div>
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full" disabled={isPosting}>
                 Crear cuenta
               </Button>
               <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
