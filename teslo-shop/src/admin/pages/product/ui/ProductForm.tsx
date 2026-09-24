@@ -1,8 +1,8 @@
 import { AdminTitle } from "@/admin/components/AdminTitle";
 import { Button } from "@/components/ui/button";
 import type { Product, Size } from "@/types/product.interface";
-import { X, SaveAll, Tag, Upload } from "lucide-react";
-import { useState } from "react";
+import { X, SaveAll, Tag, Upload, Plus } from "lucide-react";
+import { useRef, useState } from "react";
 import { Link } from "react-router";
 import { useForm } from "react-hook-form";
 import { cn } from "cn";
@@ -16,6 +16,7 @@ const availableSizes: Size[] = ["XS", "S", "M", "L", "XL", "XXL"];
 
 export const ProductForm = ({ title, subTitle, product }: Props) => {
   const [dragActive, setDragActive] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
   const {
     register,
     handleSubmit,
@@ -28,21 +29,24 @@ export const ProductForm = ({ title, subTitle, product }: Props) => {
   });
 
   const selectedSizes = watch("sizes");
+  const selectedTags = watch("tags");
 
   const addTag = () => {
-    // if (newTag.trim() && !product.tags.includes(newTag.trim())) {
-    //   // setProduct((prev) => ({
-    //   //   ...prev,
-    //   //   tags: [...prev.tags, newTag.trim()],
-    //   // }));
-    // }
+    const newTag = inputRef.current?.value;
+
+    if (!newTag) return;
+
+    const tagSet = new Set(getValues("tags"));
+    tagSet.add(newTag);
+
+    setValue("tags", Array.from(tagSet));
   };
 
   const removeTag = (tagToRemove: string) => {
-    // setProduct((prev) => ({
-    //   ...prev,
-    //   tags: prev.tags.filter((tag) => tag !== tagToRemove),
-    // }));
+    const tagSet = new Set(getValues("tags"));
+    tagSet.delete(tagToRemove);
+
+    setValue("tags", Array.from(tagSet));
   };
 
   const addSize = (size: Size) => {
@@ -319,7 +323,7 @@ export const ProductForm = ({ title, subTitle, product }: Props) => {
 
               <div className="space-y-4">
                 <div className="flex flex-wrap gap-2">
-                  {product.tags.map((tag) => (
+                  {selectedTags.map((tag) => (
                     <span
                       key={tag}
                       className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 border border-green-200"
@@ -327,10 +331,10 @@ export const ProductForm = ({ title, subTitle, product }: Props) => {
                       <Tag className="h-3 w-3 mr-1" />
                       {tag}
                       <button
-                        // onClick={() => removeTag(tag)}
+                        onClick={() => removeTag(tag)}
                         className="ml-2 text-green-600 hover:text-green-800 transition-colors duration-200"
                       >
-                        <X className="h-3 w-3" />
+                        <X className="h-3 w-3 cursor-pointer" />
                       </button>
                     </span>
                   ))}
@@ -339,16 +343,21 @@ export const ProductForm = ({ title, subTitle, product }: Props) => {
                 <div className="flex gap-2">
                   <input
                     type="text"
-                    // value={newTag}
-                    // onChange={(e) => setNewTag(e.target.value)}
-                    // onKeyDown={(e) => e.key === 'Enter' && addTag()}
+                    ref={inputRef}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " " || e.key === ",") {
+                        e.preventDefault();
+                        addTag();
+                        inputRef.current!.value = "";
+                      }
+                    }}
                     placeholder="Añadir nueva etiqueta..."
                     className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   />
                   {/* TODO: */}
-                  {/* <Button onClick={addTag} className="px-4 py-2rounded-lg ">
+                  <Button onClick={addTag} className="px-4 py-2rounded-lg ">
                     <Plus className="h-4 w-4" />
-                  </Button> */}
+                  </Button>
                 </div>
               </div>
             </div>
@@ -475,7 +484,7 @@ export const ProductForm = ({ title, subTitle, product }: Props) => {
                     Tallas disponibles
                   </span>
                   <span className="text-sm text-slate-600">
-                    {product.sizes.length} tallas
+                    {selectedSizes.length} tallas
                   </span>
                 </div>
               </div>
