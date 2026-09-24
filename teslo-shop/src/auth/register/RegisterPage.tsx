@@ -3,38 +3,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CustomLogo } from "@/components/custom/CustomLogo";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import placeholder from "../../assets/placeholder.svg";
-import { useAuthStore } from "../store/auth.store";
-import { useState } from "react";
-import { toast } from "sonner";
+import { useRegister } from "../hooks/useRegister";
 
 export const RegisterPage = () => {
-  const { register } = useAuthStore();
-  const [isPosting, setIsPosting] = useState(false);
-  const navigate = useNavigate();
-
-  const handleRegister = async (event: React.SubmitEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setIsPosting(true);
-
-    const formData = new FormData(event.target as HTMLFormElement);
-    const email = formData.get("email") as string;
-    const fullName = formData.get("fullName") as string;
-    const password = formData.get("password") as string;
-
-    const isValid = await register(email, password, fullName);
-
-    if (isValid) {
-      toast.success("Bienvenido");
-      navigate("/");
-      return;
-    }
-
-    toast.error("Error");
-
-    setIsPosting(false);
-  };
+  const { isPosting, handleRegister } = useRegister();
 
   return (
     <div className="flex flex-col gap-6">

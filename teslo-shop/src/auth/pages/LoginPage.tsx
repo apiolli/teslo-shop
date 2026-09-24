@@ -4,37 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CustomLogo } from "@/components/custom/CustomLogo";
 import placeholder from "../../assets/placeholder.svg";
-import { Link, useNavigate } from "react-router";
-import { useState, type FormEvent } from "react";
-import { toast } from "sonner";
-import { useAuthStore } from "../store/auth.store";
+import { Link } from "react-router";
+import { useLogin } from "../hooks/useLogin";
 
 export const LoginPage = () => {
-  const navigate = useNavigate();
-  const [isPosting, setIsPosting] = useState(false);
-  const { login } = useAuthStore();
-
-  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    setIsPosting(true);
-
-    const formData = new FormData(event.target as HTMLFormElement);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-
-    const isValid = await login(email, password);
-
-    if (isValid) {
-      toast.success("Bienvenido");
-      navigate("/");
-      return;
-    }
-
-    toast.error("Error");
-
-    setIsPosting(false);
-  };
+  const { isPosting, handleLogin } = useLogin();
 
   return (
     <div className="flex flex-col gap-6">
