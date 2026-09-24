@@ -44,7 +44,7 @@ export const AdminProductPage = () => {
   return (
     <ProductForm
       title={productTitle}
-      subtitle={productSubtitle}
+      subTitle={productSubtitle}
       product={product}
     />
   );
