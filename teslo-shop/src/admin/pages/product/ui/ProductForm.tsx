@@ -10,11 +10,19 @@ interface Props {
   title: string;
   subTitle: string;
   product: Product;
+  isPending: boolean;
+  onSubmit: (productLike: Partial<Product>) => Promise<void>;
 }
 
 const availableSizes: Size[] = ["XS", "S", "M", "L", "XL", "XXL"];
 
-export const ProductForm = ({ title, subTitle, product }: Props) => {
+export const ProductForm = ({
+  title,
+  subTitle,
+  product,
+  onSubmit,
+  isPending,
+}: Props) => {
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const {
@@ -30,6 +38,7 @@ export const ProductForm = ({ title, subTitle, product }: Props) => {
 
   const selectedSizes = watch("sizes");
   const selectedTags = watch("tags");
+  const currentStock = watch("stock");
 
   const addTag = () => {
     const newTag = inputRef.current?.value;
@@ -86,22 +95,22 @@ export const ProductForm = ({ title, subTitle, product }: Props) => {
     console.log(files);
   };
 
-  const onSubmit = (productLike: Product) => {
-    console.log("onSubmit", { productLike });
-  };
+  // const onSubmit = (productLike: Product) => {
+  //   console.log("onSubmit", { productLike });
+  // };
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex justify-between items-center">
         <AdminTitle title={title} subtitle={subTitle} />
         <div className="flex justify-end mb-10 gap-4">
-          <Button variant="outline">
+          <Button variant="outline" type="button">
             <Link to="/admin/products" className="flex items-center gap-2">
               <X className="w-4 h-4" />
               Cancelar
             </Link>
           </Button>
 
-          <Button type="submit">
+          <Button type="submit" disabled={isPending}>
             <SaveAll className="w-4 h-4" />
             Guardar cambios
           </Button>
@@ -174,6 +183,7 @@ export const ProductForm = ({ title, subTitle, product }: Props) => {
                       Stock del producto
                     </label>
                     <input
+                      type="number"
                       {...register("stock", {
                         required: true,
                         min: 1,
@@ -214,7 +224,7 @@ export const ProductForm = ({ title, subTitle, product }: Props) => {
                     )}
                     placeholder="Slug del producto"
                   />
-                  {errors.stock && (
+                  {errors.slug && (
                     <p className="text-red-500 text-sm mt-1">
                       {errors.slug?.message || "El slug es requerido"}
                     </p>
@@ -455,16 +465,17 @@ export const ProductForm = ({ title, subTitle, product }: Props) => {
                   </span>
                   <span
                     className={`px-2 py-1 text-xs font-medium rounded-full ${
-                      product.stock > 5
+                      currentStock > 5
                         ? "bg-green-100 text-green-800"
-                        : product.stock > 0
+                        : currentStock > 0
                           ? "bg-yellow-100 text-yellow-800"
                           : "bg-red-100 text-red-800"
                     }`}
                   >
-                    {product.stock > 5
+                    {currentStock} -
+                    {currentStock > 5
                       ? "En stock"
-                      : product.stock > 0
+                      : currentStock > 0
                         ? "Bajo stock"
                         : "Sin stock"}
                   </span>
